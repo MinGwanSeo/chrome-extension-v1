@@ -1,0 +1,29 @@
+{
+  "name": "netflix-chat-extension",
+  "version": "1.0.0",
+  "license": "MIT",
+  "source": [
+    "src/background/index.js",
+    "src/injection/addButton.js",
+    "src/injection/removeButton.js",
+    "src/popup/index.html"
+  ],
+  "scripts": {
+    "clean": "rm -rf dist/",
+    "prebuild": "yarn clean",
+    "build": "yarn parcel build",
+    "postbuild": "cp src/manifest.json dist/manifest.json && mkdir dist/icons && cp src/icons/**.* dist/icons/ && mkdir dist/resources && cp src/resources/**.* dist/resources",
+    "start": "yarn build && yarn parcel"
+  },
+  "dependencies": {
+    "query-string": "^7.1.1",
+    "react": "^18.1.0",
+    "react-dom": "^18.1.0",
+    "styled-components": "^5.3.5",
+    "styled-reset": "^4.4.1"
+  },
+  "devDependencies": {
+    "parcel": "^2.6.0",
+    "process": "^0.11.10"
+  }
+}
