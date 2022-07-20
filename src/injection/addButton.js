@@ -5,8 +5,8 @@ import App from "./injectedApp/app";
 const container = document.createElement("div");
 container.id = "netflix-chat";
 container.style = `
-      width: 100px;
-      height: 100px;
+      width: 300px;
+      height: 300px;
       position: fixed;
       right: 100px;
       bottom: 100px;
