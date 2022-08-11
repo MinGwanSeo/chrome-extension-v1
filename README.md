@@ -1,6 +1,6 @@
-# Netflix Chat Extension
+# Chrome Extension
 
-Chrome Extension for Netflix Chat App
+Chrome Extension with no definite
 
 ## How to install
 
