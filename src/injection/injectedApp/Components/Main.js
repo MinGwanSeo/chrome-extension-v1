@@ -33,6 +33,8 @@ const Canvas = styled.canvas`
 
 const Buttons = styled.div`
   display: flex;
+  flex-direction: ${(props) =>
+    props.layout === "portrait" ? "row" : "column"};
   gap: 8px;
 `;
 
@@ -42,6 +44,7 @@ const Button = styled.div`
   padding: 8px 24px;
   margin: 8px;
   font-size: 24px;
+  text-align: center;
   &:hover {
     background-color: yellow;
     cursor: pointer;
@@ -78,8 +81,8 @@ const Main = () => {
       });
     } else {
       setCanvasSize({
-        width: 640,
-        height: 360,
+        width: 480,
+        height: 270,
       });
     }
   }, [layout]);
@@ -124,7 +127,7 @@ const Main = () => {
         height={canvasSize.height}
         ref={canvasRef}
       ></Canvas>
-      <Buttons>
+      <Buttons layout={layout}>
         <Button onClick={handleCapture}>Capture</Button>
         <Button onClick={handleSave}>Save</Button>
       </Buttons>
