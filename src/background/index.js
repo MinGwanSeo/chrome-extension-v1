@@ -2,19 +2,12 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
   if (changeInfo.status === "complete" && tab.url) {
     const { url } = tab;
     const urlWithPath = url.split("?")[0];
-    console.log(urlWithPath);
-    if (
-      urlWithPath.includes("https://www.netflix.com/watch") ||
-      urlWithPath.includes("https://www.youtube.com/watch")
-    ) {
+    if (urlWithPath.includes("https://www.youtube.com/watch")) {
       chrome.scripting.executeScript({
         target: { tabId },
         files: ["injection/addButton.js"],
       });
-    } else if (
-      urlWithPath.includes("https://www.netflix.com/browse") ||
-      urlWithPath.includes("https://www.youtube.com/")
-    ) {
+    } else if (urlWithPath.includes("https://www.youtube.com/")) {
       chrome.scripting.executeScript({
         target: { tabId },
         files: ["injection/removeButton.js"],

@@ -5,7 +5,7 @@
   "source": [
     "src/background/index.js",
     "src/injection/addButton.js",
-    "src/injection/removeButton.js",
+    "src/injection/appController.js",
     "src/popup/index.html"
   ],
   "scripts": {
@@ -19,6 +19,7 @@
     "query-string": "^7.1.1",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
+    "react-responsive": "^9.0.0-beta.10",
     "styled-components": "^5.3.5",
     "styled-reset": "^4.4.1"
   },
