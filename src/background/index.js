@@ -7,11 +7,6 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
         target: { tabId },
         files: ["injection/addButton.js"],
       });
-    } else if (urlWithPath.includes("https://www.youtube.com/")) {
-      chrome.scripting.executeScript({
-        target: { tabId },
-        files: ["injection/removeButton.js"],
-      });
     }
   }
   return true;

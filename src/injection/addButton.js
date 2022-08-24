@@ -1,4 +1,4 @@
-import { open } from "./appController";
+import { open, close } from "./appController";
 
 const button = document.createElement("button");
 button.id = "mingwanseo-btn";
@@ -11,7 +11,12 @@ button.style.alignItems = "center";
 button.classList = "ytp-button";
 
 button.onclick = () => {
-  open();
+  const prevApp = document.querySelector("#mingwanseo-app");
+  if (prevApp) {
+    close();
+  } else {
+    open();
+  }
 };
 
 const target = document.querySelector(".ytp-right-controls");

@@ -1,16 +1,17 @@
 import React from "react";
 import { ThemeProvider } from "styled-components";
-import { LayoutProvider } from "../Context/LayoutContext";
+import { RouterProvider } from "../Context/RouterContext";
 import theme from "../Styles/theme";
-import Main from "./main";
+import Routes from "./Routes";
+import "../Styles/fonts.css";
 
 const App = () => {
   return (
-    <LayoutProvider>
+    <RouterProvider>
       <ThemeProvider theme={theme}>
-        <Main />
+        <Routes />
       </ThemeProvider>
-    </LayoutProvider>
+    </RouterProvider>
   );
 };
 

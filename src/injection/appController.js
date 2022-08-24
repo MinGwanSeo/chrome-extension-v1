@@ -7,6 +7,9 @@ minGwanSeo_t = undefined;
 export function createApp() {
   const container = document.createElement("div");
   container.id = "mingwanseo-app";
+  container.style.position = "relative";
+  container.style.marginBottom = "12px";
+  container.style.boxSizing = "borderBox";
   const root = createRoot(container);
   root.render(<App />);
 
@@ -23,7 +26,7 @@ function debouncedHandleResize() {
 function handleResize() {
   const prevApp = document.querySelector("#mingwanseo-app") || createApp();
 
-  const targetPortrait = document.querySelector("#secondary");
+  const targetPortrait = document.querySelector("#columns > #secondary");
   const targetLandscape = document.querySelector("ytd-watch-metadata");
 
   if (window.innerWidth <= 1000) {

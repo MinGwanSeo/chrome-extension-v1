@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import styled from "styled-components";
 
 const Wrapper = styled.div`
@@ -24,18 +24,7 @@ const Info = styled.div`
   }
 `;
 
-const Image = styled.img`
-  width: 130px;
-  height: 100%;
-`;
-
 const Main = () => {
-  const { whereAmI } = useContext(LocationContext);
-
-  function sendMessage(command) {
-    chrome.runtime.sendMessage({ command });
-  }
-
   return (
     <Wrapper>
       <Info>try for free</Info>
