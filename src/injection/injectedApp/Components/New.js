@@ -6,6 +6,7 @@ import useInput from "../Hooks/useInput";
 import Icon from "./Icon";
 
 const Wrapper = styled.div`
+  position: relative;
   width: 100%;
   min-height: 100%;
   display: flex;
@@ -140,6 +141,20 @@ const LongButton = styled.div`
   }
 `;
 
+const Upload = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(241, 242, 243, 1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const Loader = styled.img``;
+
 const New = () => {
   const [canvasSize, setCanvasSize] = useState({
     width: 40 * 16,
@@ -148,6 +163,7 @@ const New = () => {
   const [resultSize, setResultSize] = useState(40);
   const [verticalAlign, setVerticalAlign] = useState("center");
   const [horizontalAlign, setHorizontalAlign] = useState("center");
+  const [uploading, setUploading] = useState(false);
 
   const resultRef = useRef();
   const canvasRef = useRef();
@@ -174,6 +190,60 @@ const New = () => {
     }
   }, [layout]);
 
+  useEffect(() => {
+    if (uploading) {
+      setTimeout(() => {
+        if (canvasRef.current && resultRef.current) {
+          html2canvas(resultRef.current).then(async (c) => {
+            // get url
+            const response = await fetch("http://localhost:3000/s3Url");
+            const { url } = await response.json();
+
+            // 이미지 처리
+            const imgData = c.toDataURL("image/png");
+            const blob = atob(imgData.split(",")[1]);
+            const array = [];
+            for (let i = 0; i < blob.length; i++) {
+              array.push(blob.charCodeAt(i));
+            }
+            const file = new Blob([new Uint8Array(array)], {
+              type: "image/png",
+            });
+
+            // 이미지 전송
+            await fetch(url, {
+              method: "PUT",
+              headers: {
+                "Content-Type": "image/png",
+              },
+              body: file,
+            });
+
+            console.log(url.split("?")[0]);
+            // const link = document.createElement("a");
+            // link.href = imgData;
+            // link.download = "image.png";
+            // link.click();
+            setUploading(false);
+          });
+        }
+      }, 200);
+      // const imgData = canvasRef.current.toDataURL("image/png");
+      // const link = document.createElement("a");
+      // link.href = imgData;
+      // link.download = "image.png";
+      // link.click();
+      //   const blob = atob(imgData.split(",")[1]);
+      //   const array = [];
+      //   for (let i = 0; i < blob.length; i++) {
+      //     array.push(blob.charCodeAt(i));
+      //   }
+      //   const file = new Blob([new Uint8Array(array)], { type: "image/png" });
+      //   const formdata = new FormData();
+      //   formdata.append("file", file);
+    }
+  }, [uploading]);
+
   function handleAlign(direction, value) {
     if (direction === "vertical") {
       setVerticalAlign(value);
@@ -191,21 +261,21 @@ const New = () => {
   }
 
   function handleSave() {
+    setUploading(true);
     if (canvasRef.current && resultRef.current) {
-      html2canvas(resultRef.current).then((c) => {
-        const imgData = c.toDataURL("image/png");
-        const link = document.createElement("a");
-        link.href = imgData;
-        link.download = "image.png";
-        link.click();
-      });
-
+      // html2canvas(resultRef.current).then((c) => {
+      //   const imgData = c.toDataURL("image/png");
+      //   const link = document.createElement("a");
+      //   link.href = imgData;
+      //   link.download = "image.png";
+      //   link.click();
+      //   setUploading(false);
+      // });
       // const imgData = canvasRef.current.toDataURL("image/png");
       // const link = document.createElement("a");
       // link.href = imgData;
       // link.download = "image.png";
       // link.click();
-
       //   const blob = atob(imgData.split(",")[1]);
       //   const array = [];
       //   for (let i = 0; i < blob.length; i++) {
@@ -320,6 +390,11 @@ const New = () => {
           <LongButton onClick={handleSave}>Save</LongButton>
         </Row>
       </Controls>
+      {uploading && (
+        <Upload>
+          <Loader src={chrome.runtime.getURL("/resources/loader.gif")} />
+        </Upload>
+      )}
     </Wrapper>
   );
 };

@@ -130,4 +130,13 @@ const Bottom = ({ size = 24, color = "#222222" }) => (
   </svg>
 );
 
-export default { Close, Back, Left, Center, Right, Top, Middle, Bottom };
+export default {
+  Close,
+  Back,
+  Left,
+  Center,
+  Right,
+  Top,
+  Middle,
+  Bottom,
+};
