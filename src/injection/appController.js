@@ -2,7 +2,7 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import App from "./injectedApp/Components/app";
 
-minGwanSeo_t = undefined;
+minGwanSeo_resize_t = undefined;
 
 export function createApp() {
   const container = document.createElement("div");
@@ -17,8 +17,8 @@ export function createApp() {
 }
 
 function debouncedHandleResize() {
-  if (minGwanSeo_t) {
-    clearTimeout(minGwanSeo_t);
+  if (minGwanSeo_resize_t) {
+    clearTimeout(minGwanSeo_resize_t);
   }
   t = setTimeout(handleResize, 400);
 }
