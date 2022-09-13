@@ -1,17 +1,20 @@
 import html2canvas from "html2canvas";
 import React, { useEffect, useRef, useState } from "react";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import { useRouter } from "../Context/RouterContext";
 import useInput from "../Hooks/useInput";
 import Icon from "./Icon";
 
 const Wrapper = styled.div`
   position: relative;
-  width: 100%;
+  width: max-content;
+  min-width: 100%;
+  height: max-content;
   min-height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow: scroll;
   gap: 24px;
   flex-direction: ${(props) =>
     props.layout === "portrait" ? "column" : "row"};
@@ -175,22 +178,6 @@ const New = () => {
   const shadowInput = useInput("#ffffff");
 
   useEffect(() => {
-    if (layout === "portrait") {
-      setCanvasSize({
-        width: 40 * 16,
-        height: 40 * 9,
-      });
-      setResultSize(40);
-    } else {
-      setCanvasSize({
-        width: 36 * 16,
-        height: 36 * 9,
-      });
-      setResultSize(36);
-    }
-  }, [layout]);
-
-  useEffect(() => {
     if (uploading) {
       setTimeout(() => {
         if (canvasRef.current && resultRef.current) {
@@ -253,8 +240,18 @@ const New = () => {
   }
 
   function handleCapture() {
-    const video = document.querySelector("video");
-    if (canvasRef.current) {
+    const isInViewport = (
+      e,
+      { top: t, height: h } = e.getBoundingClientRect()
+    ) => t <= innerHeight && t + h >= 0;
+
+    let video = undefined;
+    document.querySelectorAll("video").forEach((v) => {
+      if (isInViewport(v)) {
+        video = v;
+      }
+    });
+    if (canvasRef.current && video) {
       const ctx = canvasRef.current.getContext("2d");
       ctx.drawImage(video, 0, 0, canvasSize.width, canvasSize.height);
     }

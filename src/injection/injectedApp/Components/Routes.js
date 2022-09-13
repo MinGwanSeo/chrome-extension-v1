@@ -12,7 +12,7 @@ const portraitCSS = css`
 
 const landscapeCSS = css`
   width: 100%;
-  height: 400px;
+  height: 440px;
 `;
 
 const Wrapper = styled.div`
