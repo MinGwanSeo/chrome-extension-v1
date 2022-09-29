@@ -1,6 +1,6 @@
-import html2canvas from "html2canvas";
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
+import * as htmlToImage from "html-to-image";
 import { useResult } from "../Context/ResultContext";
 import { useRouter } from "../Context/RouterContext";
 import useInput from "../Hooks/useInput";
@@ -172,8 +172,8 @@ const New = () => {
   const [uploading, setUploading] = useState(false);
   const [videoTime, setVideoTime] = useState(0);
 
-  const resultRef = useRef();
   const canvasRef = useRef();
+  const textRef = useRef();
   const { layout, back, videoId } = useRouter();
   const { uploadImage } = useResult();
 
@@ -185,33 +185,58 @@ const New = () => {
   useEffect(() => {
     if (uploading) {
       setTimeout(() => {
-        if (canvasRef.current && resultRef.current) {
-          html2canvas(resultRef.current).then(async (c) => {
-            // 이미지 처리
-            const imgData = c.toDataURL("image/png");
-            const blob = atob(imgData.split(",")[1]);
-            const array = [];
-            for (let i = 0; i < blob.length; i++) {
-              array.push(blob.charCodeAt(i));
-            }
-            const file = new Blob([new Uint8Array(array)], {
-              type: "image/png",
-            });
+        if (canvasRef.current && textRef.current) {
+          htmlToImage
+            .toCanvas(textRef.current, {
+              backgroundColor: null,
+              width: 360,
+              height: 360,
+            })
+            .then(async (c) => {
+              const resultCanvas = document.createElement("canvas");
+              resultCanvas.width = 360;
+              resultCanvas.height = 360;
+              const resultCtx = resultCanvas.getContext("2d");
+              // 스크린샷 렌더링
+              resultCtx.drawImage(
+                canvasRef.current,
+                canvasLeftInput.value,
+                0,
+                360,
+                360,
+                0,
+                0,
+                360,
+                360
+              );
+              // 텍스트 렌더링
+              resultCtx.drawImage(c, 0, 0, 720, 720, 0, 0, 360, 360);
 
-            // 업로드 로직
-            const { result, reason } = await uploadImage({
-              videoId: videoId,
-              time: videoTime,
-              file: file,
-            });
+              // 이미지 처리
+              const imgData = resultCanvas.toDataURL("image/png");
+              const blob = atob(imgData.split(",")[1]);
+              const array = [];
+              for (let i = 0; i < blob.length; i++) {
+                array.push(blob.charCodeAt(i));
+              }
+              const file = new Blob([new Uint8Array(array)], {
+                type: "image/png",
+              });
 
-            if (result === "success") {
-              back();
-            } else if (result === "fail") {
-              setUploading(false);
-              console.log(reason);
-            }
-          });
+              // 업로드 로직
+              const { result, reason } = await uploadImage({
+                videoId: videoId,
+                time: videoTime,
+                file: file,
+              });
+
+              if (result === "success") {
+                back();
+              } else if (result === "fail") {
+                setUploading(false);
+                console.log(reason);
+              }
+            });
         }
       }, 200);
     }
@@ -244,7 +269,7 @@ const New = () => {
 
   return (
     <Wrapper layout={layout}>
-      <ResultImage ref={resultRef}>
+      <ResultImage>
         <Canvas
           canvasSize={canvasSize}
           width={canvasSize.width}
@@ -254,6 +279,7 @@ const New = () => {
         ></Canvas>
         <TextWrapper>
           <Text
+            ref={textRef}
             contentEditable="true"
             onKeyDown={(e) => {
               e.stopPropagation();
