@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { useResult } from "../Context/ResultContext";
 import { useRouter } from "../Context/RouterContext";
 import useInput from "../Hooks/useInput";
+import { getQuery, getYoutubeVideo } from "../util";
 import Icon from "./Icon";
 
 const Wrapper = styled.div`
@@ -23,8 +24,8 @@ const Wrapper = styled.div`
 
 const ResultImage = styled.div`
   position: relative;
-  width: ${(props) => props.size * 9}px;
-  height: ${(props) => props.size * 9}px;
+  width: ${40 * 9}px;
+  height: ${40 * 9}px;
   overflow: hidden;
   border: 2px solid white;
 `;
@@ -41,8 +42,8 @@ const TextWrapper = styled.div`
   position: absolute;
   top: 0;
   left: 0;
-  width: ${(props) => props.size * 9}px;
-  height: ${(props) => props.size * 9}px;
+  width: ${40 * 9}px;
+  height: ${40 * 9}px;
   overflow: hidden;
 `;
 
@@ -77,8 +78,8 @@ const Text = styled.div`
 `;
 
 const Controls = styled.div`
-  width: ${(props) => props.size * 9}px;
-  height: ${(props) => props.size * 9}px;
+  width: ${40 * 9}px;
+  height: ${40 * 9}px;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -164,18 +165,17 @@ const New = () => {
     width: 40 * 16,
     height: 40 * 9,
   });
-  const [resultSize, setResultSize] = useState(40);
   const [verticalAlign, setVerticalAlign] = useState("center");
   const [horizontalAlign, setHorizontalAlign] = useState("center");
   const [uploading, setUploading] = useState(false);
 
   const resultRef = useRef();
   const canvasRef = useRef();
-  const { layout } = useRouter();
+  const { layout, push } = useRouter();
   const { uploadImage } = useResult();
 
   const fontSizeInput = useInput("16");
-  const canvasLeftInput = useInput(((16 - 9) * resultSize) / 2);
+  const canvasLeftInput = useInput(((16 - 9) * 40) / 2);
   const colorInput = useInput("#000000");
   const shadowInput = useInput("#ffffff");
 
@@ -206,11 +206,12 @@ const New = () => {
               file: file,
             });
 
-            if (result === "fail") {
+            if (result === "success") {
+              push("/");
+            } else if (result === "fail") {
+              setUploading(false);
               console.log(reason);
             }
-            console.log(result);
-            setUploading(false);
           });
         }
       }, 200);
@@ -237,45 +238,17 @@ const New = () => {
     setUploading(true);
   }
 
-  function getQuery() {
-    return location.search
-      .substring(1)
-      .split("&")
-      .reduce((acc, cur) => {
-        const [key, value] = cur.split("=");
-        acc[key] = value;
-        return acc;
-      }, {});
-  }
-  function getYoutubeVideo() {
-    const isInViewport = (
-      e,
-      { top: t, height: h } = e.getBoundingClientRect()
-    ) => t <= innerHeight && t + h >= 0;
-
-    let video = undefined;
-
-    document.querySelectorAll("video").forEach((v) => {
-      if (isInViewport(v)) {
-        video = v;
-      }
-    });
-
-    return video;
-  }
-
   return (
     <Wrapper layout={layout}>
-      <ResultImage size={resultSize} ref={resultRef}>
+      <ResultImage ref={resultRef}>
         <Canvas
           canvasSize={canvasSize}
-          resultSize={resultSize}
           width={canvasSize.width}
           height={canvasSize.height}
           left={canvasLeftInput.value}
           ref={canvasRef}
         ></Canvas>
-        <TextWrapper size={resultSize}>
+        <TextWrapper>
           <Text
             contentEditable="true"
             onKeyDown={(e) => {
@@ -289,7 +262,7 @@ const New = () => {
           />
         </TextWrapper>
       </ResultImage>
-      <Controls size={resultSize}>
+      <Controls>
         <Row>
           <RowTitle>Image</RowTitle>
         </Row>
@@ -299,7 +272,7 @@ const New = () => {
             <input
               type="range"
               min="0"
-              max={resultSize * (16 - 9)}
+              max={40 * (16 - 9)}
               {...canvasLeftInput}
             ></input>
           </RowItem>

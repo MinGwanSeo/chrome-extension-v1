@@ -57,9 +57,15 @@ export const ResultProvider = ({ children }) => {
     });
   });
 
+  const getImages = useCallback(async (videoId) => {
+    const response = await fetch(`${API_URL}/screenshots?vid=${videoId}`);
+    const images = await response.json();
+    return images;
+  });
+
   const value = useMemo(
-    () => ({ imageData, cachingImage, uploadImage }),
-    [imageData, cachingImage, uploadImage]
+    () => ({ imageData, cachingImage, uploadImage, getImages }),
+    [imageData, cachingImage, uploadImage, getImages]
   );
 
   return (
