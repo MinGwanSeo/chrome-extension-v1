@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useResult } from "../Context/ResultContext";
 import { useRouter } from "../Context/RouterContext";
-import { getQuery, getYoutubeVideo } from "../util";
+import { getYoutubeVideo } from "../util";
 
 const Wrapper = styled.div`
   height: 100%;
@@ -48,17 +48,18 @@ const Image = styled.img`
 
 const Main = () => {
   const [images, setImages] = useState([]);
-  const { layout, push } = useRouter();
+  const { layout, push, videoId } = useRouter();
   const { getImages } = useResult();
 
   useEffect(() => {
-    (async function () {
-      const videoId = getQuery().v;
-      const newImages = await getImages(videoId);
-      newImages.sort((a, b) => a.vTime - b.vTime);
-      setImages(newImages);
-    })();
-  }, []);
+    if (videoId) {
+      (async function (videoId) {
+        const newImages = await getImages(videoId);
+        newImages.sort((a, b) => a.vTime - b.vTime);
+        setImages(newImages);
+      })(videoId);
+    }
+  }, [videoId]);
 
   return (
     <Wrapper layout={layout}>

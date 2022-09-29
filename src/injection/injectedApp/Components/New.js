@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { useResult } from "../Context/ResultContext";
 import { useRouter } from "../Context/RouterContext";
 import useInput from "../Hooks/useInput";
-import { getQuery, getYoutubeVideo } from "../util";
+import { getYoutubeVideo } from "../util";
 import Icon from "./Icon";
 
 const Wrapper = styled.div`
@@ -161,17 +161,20 @@ const Upload = styled.div`
 const Loader = styled.img``;
 
 const New = () => {
-  const [canvasSize, setCanvasSize] = useState({
+  const canvasSize = {
     width: 40 * 16,
     height: 40 * 9,
-  });
+  };
+
   const [verticalAlign, setVerticalAlign] = useState("center");
   const [horizontalAlign, setHorizontalAlign] = useState("center");
+  const [isCaptured, setIsCaptured] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [videoTime, setVideoTime] = useState(0);
 
   const resultRef = useRef();
   const canvasRef = useRef();
-  const { layout, push } = useRouter();
+  const { layout, back, videoId } = useRouter();
   const { uploadImage } = useResult();
 
   const fontSizeInput = useInput("16");
@@ -195,10 +198,6 @@ const New = () => {
               type: "image/png",
             });
 
-            // 비디오 정보
-            const videoId = getQuery().v;
-            const videoTime = getYoutubeVideo()?.currentTime;
-
             // 업로드 로직
             const { result, reason } = await uploadImage({
               videoId: videoId,
@@ -207,7 +206,7 @@ const New = () => {
             });
 
             if (result === "success") {
-              push("/");
+              back();
             } else if (result === "fail") {
               setUploading(false);
               console.log(reason);
@@ -231,11 +230,16 @@ const New = () => {
     if (canvasRef.current && video) {
       const ctx = canvasRef.current.getContext("2d");
       ctx.drawImage(video, 0, 0, canvasSize.width, canvasSize.height);
+      const newVideoTime = video.currentTime;
+      setVideoTime(newVideoTime);
+      setIsCaptured(true);
     }
   }
 
   function handleSave() {
-    setUploading(true);
+    if (isCaptured) {
+      setUploading(true);
+    }
   }
 
   return (

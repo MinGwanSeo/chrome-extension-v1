@@ -21,20 +21,29 @@ button.onclick = () => {
   }
 };
 
-window.addEventListener("mousemove", debouncedPageListener);
+prevHref = location.href;
 
-function debouncedPageListener() {
-  if (minGwanSeo_youtube_t) {
-    clearTimeout(minGwanSeo_youtube_t);
+makeButton();
+const observer = new MutationObserver((mutations) => {
+  for (let i = 0; i < mutations.length; i++) {
+    if (prevHref !== location.href) {
+      makeButton();
+      window.postMessage("hrefchange");
+      break;
+    }
   }
-  minGwanSeo_youtube_t = setTimeout(pageListener, 100);
-}
+  prevHref = location.href;
+});
 
-function pageListener() {
+observer.observe(document.querySelector("body"), {
+  childList: true,
+  subtree: true,
+});
+
+function makeButton() {
   const target = document.querySelector(".ytp-right-controls");
   const prevBtn = document.querySelector("#mingwanseo-btn");
   if (target && !prevBtn) {
     target.insertAdjacentElement("beforeBegin", button);
-    window.removeEventListener("mousemove", debouncedPageListener);
   }
 }
