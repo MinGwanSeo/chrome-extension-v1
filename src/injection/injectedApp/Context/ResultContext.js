@@ -6,6 +6,8 @@ import {
   useState,
 } from "react";
 
+const API_URL = "http://localhost:3000";
+
 const ResultContext = createContext();
 
 export const ResultProvider = ({ children }) => {
@@ -18,9 +20,46 @@ export const ResultProvider = ({ children }) => {
     [setImageData]
   );
 
+  const uploadImage = useCallback(({ videoId, time, file }) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response = await fetch(`${API_URL}/commons/upload`);
+        const { url, cdn } = await response.json();
+        await fetch(url, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "image/png",
+          },
+          body: file,
+        });
+
+        await fetch(`${API_URL}/screenshots`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            vid: videoId,
+            image: cdn,
+            vTime: time,
+          }),
+        });
+
+        resolve({
+          result: "success",
+        });
+      } catch (error) {
+        reject({
+          result: "fail",
+          reason: error,
+        });
+      }
+    });
+  });
+
   const value = useMemo(
-    () => ({ imageData, cachingImage }),
-    [imageData, cachingImage]
+    () => ({ imageData, cachingImage, uploadImage }),
+    [imageData, cachingImage, uploadImage]
   );
 
   return (

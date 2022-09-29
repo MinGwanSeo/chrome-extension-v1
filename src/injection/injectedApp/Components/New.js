@@ -1,6 +1,7 @@
 import html2canvas from "html2canvas";
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
+import { useResult } from "../Context/ResultContext";
 import { useRouter } from "../Context/RouterContext";
 import useInput from "../Hooks/useInput";
 import Icon from "./Icon";
@@ -171,6 +172,7 @@ const New = () => {
   const resultRef = useRef();
   const canvasRef = useRef();
   const { layout } = useRouter();
+  const { uploadImage } = useResult();
 
   const fontSizeInput = useInput("16");
   const canvasLeftInput = useInput(((16 - 9) * resultSize) / 2);
@@ -182,10 +184,6 @@ const New = () => {
       setTimeout(() => {
         if (canvasRef.current && resultRef.current) {
           html2canvas(resultRef.current).then(async (c) => {
-            // get url
-            const response = await fetch("http://localhost:3000/s3Url");
-            const { url } = await response.json();
-
             // 이미지 처리
             const imgData = c.toDataURL("image/png");
             const blob = atob(imgData.split(",")[1]);
@@ -197,37 +195,25 @@ const New = () => {
               type: "image/png",
             });
 
-            // 이미지 전송
-            await fetch(url, {
-              method: "PUT",
-              headers: {
-                "Content-Type": "image/png",
-              },
-              body: file,
+            // 비디오 정보
+            const videoId = getQuery().v;
+            const videoTime = getYoutubeVideo()?.currentTime;
+
+            // 업로드 로직
+            const { result, reason } = await uploadImage({
+              videoId: videoId,
+              time: videoTime,
+              file: file,
             });
 
-            console.log(url.split("?")[0]);
-            // const link = document.createElement("a");
-            // link.href = imgData;
-            // link.download = "image.png";
-            // link.click();
+            if (result === "fail") {
+              console.log(reason);
+            }
+            console.log(result);
             setUploading(false);
           });
         }
       }, 200);
-      // const imgData = canvasRef.current.toDataURL("image/png");
-      // const link = document.createElement("a");
-      // link.href = imgData;
-      // link.download = "image.png";
-      // link.click();
-      //   const blob = atob(imgData.split(",")[1]);
-      //   const array = [];
-      //   for (let i = 0; i < blob.length; i++) {
-      //     array.push(blob.charCodeAt(i));
-      //   }
-      //   const file = new Blob([new Uint8Array(array)], { type: "image/png" });
-      //   const formdata = new FormData();
-      //   formdata.append("file", file);
     }
   }, [uploading]);
 
@@ -240,17 +226,7 @@ const New = () => {
   }
 
   function handleCapture() {
-    const isInViewport = (
-      e,
-      { top: t, height: h } = e.getBoundingClientRect()
-    ) => t <= innerHeight && t + h >= 0;
-
-    let video = undefined;
-    document.querySelectorAll("video").forEach((v) => {
-      if (isInViewport(v)) {
-        video = v;
-      }
-    });
+    const video = getYoutubeVideo();
     if (canvasRef.current && video) {
       const ctx = canvasRef.current.getContext("2d");
       ctx.drawImage(video, 0, 0, canvasSize.width, canvasSize.height);
@@ -259,29 +235,33 @@ const New = () => {
 
   function handleSave() {
     setUploading(true);
-    if (canvasRef.current && resultRef.current) {
-      // html2canvas(resultRef.current).then((c) => {
-      //   const imgData = c.toDataURL("image/png");
-      //   const link = document.createElement("a");
-      //   link.href = imgData;
-      //   link.download = "image.png";
-      //   link.click();
-      //   setUploading(false);
-      // });
-      // const imgData = canvasRef.current.toDataURL("image/png");
-      // const link = document.createElement("a");
-      // link.href = imgData;
-      // link.download = "image.png";
-      // link.click();
-      //   const blob = atob(imgData.split(",")[1]);
-      //   const array = [];
-      //   for (let i = 0; i < blob.length; i++) {
-      //     array.push(blob.charCodeAt(i));
-      //   }
-      //   const file = new Blob([new Uint8Array(array)], { type: "image/png" });
-      //   const formdata = new FormData();
-      //   formdata.append("file", file);
-    }
+  }
+
+  function getQuery() {
+    return location.search
+      .substring(1)
+      .split("&")
+      .reduce((acc, cur) => {
+        const [key, value] = cur.split("=");
+        acc[key] = value;
+        return acc;
+      }, {});
+  }
+  function getYoutubeVideo() {
+    const isInViewport = (
+      e,
+      { top: t, height: h } = e.getBoundingClientRect()
+    ) => t <= innerHeight && t + h >= 0;
+
+    let video = undefined;
+
+    document.querySelectorAll("video").forEach((v) => {
+      if (isInViewport(v)) {
+        video = v;
+      }
+    });
+
+    return video;
   }
 
   return (
