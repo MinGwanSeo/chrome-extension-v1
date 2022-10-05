@@ -15,14 +15,17 @@ const Wrapper = styled.div`
 `;
 
 const Button = styled.div`
+  width: 96px;
   background-color: white;
+  border-radius: 4px;
+  border: 1px solid #000000;
   color: black;
   padding: 8px 24px;
   margin: 8px;
   font-size: 24px;
   text-align: center;
   &:hover {
-    background-color: yellow;
+    background-color: #d8d8d8;
     cursor: pointer;
   }
 `;

@@ -5,7 +5,7 @@ function getYoutubeVideo() {
   let video = undefined;
 
   document.querySelectorAll("video").forEach((v) => {
-    if (isInViewport(v)) {
+    if (isInViewport(v) && v.src) {
       video = v;
     }
   });

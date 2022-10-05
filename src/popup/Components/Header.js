@@ -19,7 +19,7 @@ const Logo = styled.div`
 const Header = () => {
   return (
     <Wrapper>
-      <Logo>Netflix Chat</Logo>
+      <Logo>Youtube Capture</Logo>
     </Wrapper>
   );
 };

@@ -123,8 +123,9 @@ const Button = styled.div`
   font-size: 16px;
   text-align: center;
   border-radius: 4px;
+  border: 1px solid #000000;
   &:hover {
-    background-color: yellow;
+    background-color: #d8d8d8;
     cursor: pointer;
   }
 `;
@@ -140,8 +141,9 @@ const LongButton = styled.div`
   font-size: 16px;
   text-align: center;
   border-radius: 4px;
+  border: 1px solid #000000;
   &:hover {
-    background-color: yellow;
+    background-color: #d8d8d8;
     cursor: pointer;
   }
 `;
@@ -152,7 +154,7 @@ const Upload = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(241, 242, 243, 1);
+  background-color: #eaeaea;
   display: flex;
   justify-content: center;
   align-items: center;

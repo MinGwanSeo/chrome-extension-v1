@@ -17,7 +17,9 @@ const landscapeCSS = css`
 
 const Wrapper = styled.div`
   position: relative;
-  background-color: #c2c7c7;
+  background-color: #eaeaea;
+  border: 1px solid #000000;
+  border-radius: 16px;
   padding: 48px 12px 12px 12px;
   overflow-y: scroll;
   box-sizing: border-box;
