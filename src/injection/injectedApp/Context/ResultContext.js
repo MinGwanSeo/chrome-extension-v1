@@ -6,7 +6,7 @@ import {
   useState,
 } from "react";
 
-const API_URL = "http://localhost:3000";
+const API_URL = "https://mingwanseo.com";
 
 const ResultContext = createContext();
 
